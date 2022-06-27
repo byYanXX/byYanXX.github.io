@@ -29,11 +29,11 @@ comments:
   facebook:
     appid                :
     num_posts            : # 5 (default)
-    colorscheme          : # "light" (default), "dark"
+    colorscheme          : "dark" # "light" (default), 
 staticman:
-  allowedFields          : ['name', 'email', 'url', 'message']
-  branch                 : "gh-pages" # "master", "gh-pages"
-  commitMessage          : "New comment."
+  allowedFields          : # ['name', 'email', 'url', 'message']
+  branch                 : "master" # "master", "gh-pages"
+  commitMessage          : # "New comment."
   filename               : comment-{@timestamp}
   format                 : "yml"
   moderation             : true
@@ -73,31 +73,31 @@ social:
 
 # Analytics
 analytics:
-  provider               :  "google-universal" # false (default), "google", "google-universal", "custom"
+  provider               : false # false (default), "google", "google-universal", "custom"
   google:
     tracking_id          :
 
 
 # Site Author
 author:
-  name             : "Your Sidebar Name"
+  name             : "Yan Bingyang"
   avatar           : "profile.png"
-  bio              : "Your biography for the left-hand sidebar"
-  location         : "Location"
+  bio              : "不以物喜，不以己悲"
+  location         : # "Location"
   employer         :
-  pubmed           : "https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
-  googlescholar    : "http://yourfullgooglescholarurl.com"
-  email            :
-  researchgate     :  # example: "https://www.researchgate.net/profile/yourprofile"
+  # pubmed           : "https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
+  # googlescholar    : "http://yourfullgooglescholarurl.com"
+  # email            :
+  # researchgate     :  # example: "https://www.researchgate.net/profile/yourprofile"
   uri              :
   bitbucket        :
   codepen          :
   dribbble         :
   flickr           :
-  facebook         :
+  # facebook         :
   foursquare       :
   github           : "byYanXX"
-  google_plus      :
+  # google_plus      :
   keybase          :
   instagram        :
   impactstory      : #"https://profiles.impactstory.org/u/xxxx-xxxx-xxxx-xxxx"
@@ -109,7 +109,7 @@ author:
   stackoverflow    : # http://stackoverflow.com/users/123456/username
   steam            :
   tumblr           :
-  twitter          : "replacethistwitterhandle"
+  # twitter          : "replacethistwitterhandle"
   vine             :
   weibo            :
   xing             :
