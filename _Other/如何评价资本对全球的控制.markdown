@@ -3,6 +3,8 @@ title: "如何评价资本对全球的控制"
 collection: Other
 permalink: /Other/如何评价资本对全球的控制
 excerpt: 'Come on.'
+tags:
+  - 政治
 ---
 
 总览
