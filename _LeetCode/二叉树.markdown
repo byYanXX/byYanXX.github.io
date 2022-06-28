@@ -4,6 +4,7 @@ collection: LeetCode
 permalink: /LeetCode/二叉树
 ---
 
+{% include base_path %}
 
 | 题目 | 难度 | 时间复杂度 | 空间复杂度 | 备注 |
 |:-------|:------:|:------:|:------:|-------|
