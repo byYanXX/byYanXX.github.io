@@ -1,7 +1,7 @@
 ---
 title: "Paper Title Number 2"
 collection: Notes
-permalink: /Notes/2022-06-27-How-to-read-a-paper.markdown
+permalink: /Notes/2022-06-27-How-to-read-a-paper
 excerpt: 'This paper is about the number 2. The number 3 is left for future work.'
 date: 2010-10-01
 venue: 'Journal 1'
