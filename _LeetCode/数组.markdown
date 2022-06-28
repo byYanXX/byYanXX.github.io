@@ -4,5 +4,7 @@ collection: LeetCode
 permalink: /LeetCode/数组
 ---
 
+{% include base_path %}
+
 数组
 ===
