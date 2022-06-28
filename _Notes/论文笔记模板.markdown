@@ -4,8 +4,7 @@ collection: Notes
 permalink: /Notes/论文笔记模板
 excerpt: '【<时间> <期刊/会议名称> <期刊等级>】<主要作者>'
 tags:
- - Infocom
- - 综述
+ - 2022.06.29
 ---
 
 * TOC
