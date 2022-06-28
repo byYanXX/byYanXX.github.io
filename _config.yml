@@ -29,7 +29,7 @@ comments:
   facebook:
     appid                :
     num_posts            : 10 # (default)
-    colorscheme          : "dark" # "light" (default), 
+    colorscheme          : "dark" # "light" (default),
 staticman:
   allowedFields          : # ['name', 'email', 'url', 'message']
   branch                 : "master" # "master", "gh-pages"
@@ -253,7 +253,7 @@ sass:
 
 # Outputting
 permalink: /:categories/:title/
-paginate: 10 # amount of posts to show
+paginate: 1 # amount of posts to show
 paginate_path: /page:num/
 timezone: China/Shanghai # America/Los_Angeles # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
