@@ -4,7 +4,6 @@ collection: LeetCode
 permalink: /LeetCode/链表
 ---
 
-{% include base_path %}
 
 链表
 ===
