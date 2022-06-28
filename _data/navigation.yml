@@ -1,22 +1,16 @@
 # main links links
 main:
-  - title: "Publications"
-    url: /publications/
+  - title: "Notes"
+    url: /Notes/
 
-  - title: "Talks"
-    url: /talks/    
+  - title: "LeetCode"
+    url: /LeetCode/    
 
-  - title: "Teaching"
-    url: /teaching/    
+  - title: "Blogs"
+    url: /Blogs/    
     
-  - title: "Portfolio"
-    url: /portfolio/
-        
-  - title: "Blog Posts"
-    url: /year-archive/
+  - title: "Other"
+    url: /Other/
     
   - title: "CV"
     url: /cv/
-    
-  - title: "Guide"
-    url: /markdown/
