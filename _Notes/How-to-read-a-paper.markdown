@@ -1,5 +1,5 @@
 ---
-title: "How to Read a Paper"
+title: "【论文笔记】How to Read a Paper"
 collection: Notes
 permalink: /Notes/How-to-Read-a-Paper
 excerpt: '【Stanford University】S Keshav'
