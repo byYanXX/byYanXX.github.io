@@ -1,16 +1,16 @@
 ---
-title: "【论文笔记】论文笔记模板"
+title: "【论文笔记】Localization Algorithm for Underwater Sensor Network: A Review"
 collection: Notes
-permalink: /Notes/论文笔记模板
-excerpt: '【<时间> <期刊/会议名称> <期刊等级>】<主要作者>'
+permalink: /Notes/水下传感器网络定位算法综述
+excerpt: '【2021, IEEE INTERNET OF THINGS JOURNAL】J Luo, Y Yang, Z Wang, Y Chen'
 tags:
- - [博客书写日期]
+ - 2022.06.29
 ---
 
 * TOC
 {:toc}
 
-[Download paper here]()
+[Download paper here](https://sci-hub.se/10.1109/JIOT.2021.3081918)
 
 摘要
 ---
