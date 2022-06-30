@@ -1,6 +1,6 @@
 ---
 title: '【软件安装】Intellij安装'
-date: 2022-06-28
+date: 2022-06-30
 permalink: /Blogs/2022/06/30/Intellij安装
 ---
 
