@@ -8,7 +8,7 @@ tags:
   - 沈阳
 ---
 
-# myBlogs
+{% include base_path %}
 
 myBLOG！
 ===
