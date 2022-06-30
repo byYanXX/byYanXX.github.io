@@ -1,0 +1,7 @@
+---
+title: '【软件安装】Intellij安装'
+date: 2022-06-28
+permalink: /Blogs/2022/06/30/Intellij安装
+---
+
+[无限重置试用时间](https://shimo.im/docs/jRRw9RR3hhxPHpKg/read)
