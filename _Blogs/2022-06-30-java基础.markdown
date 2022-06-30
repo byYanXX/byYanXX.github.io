@@ -1,7 +1,7 @@
 ---
 title: "【Java】01 程序基础"
 date: 2022-06-30
-permalink: /Blogs/java-01-基础
+permalink: /Blogs/2022/06/30/java-01-基础
 tags:
  - 2022.06.30
 ---
@@ -32,3 +32,18 @@ public class Hello {
   - 布尔型：boolean (理论上存储布尔类型只需要1 bit，但是通常JVM内部会把boolean表示为4字节整数)
   - 字符型：char (支持ASCII、也支持一个Unicode字符)
 2. 引用类型：
+  - String 等
+
+var 关键字
+---
+var sb = new StringBuilder() 等价于 StringBuilder sb = new StringBuilder()
+
+**注意：** Java 的外部作用域无法屏蔽内部作用域的变量，所以如下代码会编译异常。
+```
+{
+  int x = 5;
+  {
+    int x =3;
+  }
+}
+```
