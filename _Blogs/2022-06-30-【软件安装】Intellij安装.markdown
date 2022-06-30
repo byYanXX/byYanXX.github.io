@@ -7,3 +7,5 @@ permalink: /Blogs/2022/06/30/Intellij安装
 {% include base_path %}
 
 [无限重置试用时间](https://shimo.im/docs/jRRw9RR3hhxPHpKg/read)
+
+[解决Mac Pro上IDEA卡顿的问题](https://blog.csdn.net/ABCAA1024/article/details/118435999?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-1-118435999-blog-117674434.pc_relevant_multi_platform_whitelistv1&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-1-118435999-blog-117674434.pc_relevant_multi_platform_whitelistv1&utm_relevant_index=1)
