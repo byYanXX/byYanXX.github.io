@@ -4,13 +4,13 @@ title: 数据碎笔
 permalink: /notes/
 ---
 <div class="notes-container">
-  {% include notes-sidebar.html %}
+  {% include kb-sidebar.html collection="notes" %}
   <article class="notes-content">
     <header class="note-header">
       <h1>数据碎笔</h1>
     </header>
     <div class="notes-intro">
-      从左侧目录选择一篇笔记开始阅读。新增笔记请在 <code>_notes/</code> 下创建 markdown 文件，并在 frontmatter 中填写 <code>title</code>、<code>category</code>、<code>subcategory</code> 三个字段，侧栏树会自动更新。
+      从左侧目录选择一篇笔记开始阅读。新增笔记请在 <code>_notes/</code> 下创建 markdown 文件，并在 frontmatter 中填写 <code>title</code>、<code>category</code>、<code>subcategory</code> 三个字段（可选 <code>tags</code>），侧栏树会自动更新。
     </div>
   </article>
 </div>

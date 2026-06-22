@@ -16,6 +16,9 @@ collections:
   notes:
     output: true
     permalink: /notes/:path/
+  articles:
+    output: true
+    permalink: /articles/:path/
 
 defaults:
   - scope:
@@ -28,6 +31,11 @@ defaults:
       type: notes
     values:
       layout: note
+  - scope:
+      path: ""
+      type: articles
+    values:
+      layout: article
 
 plugins:
   - jekyll-feed

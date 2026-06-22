@@ -25,7 +25,7 @@
   {% feed_meta %}
   {% seo title=false %}
 </head>
-<body class="layout-{{ page.layout | default: 'default' }}">
+<body class="layout-{{ page.layout | default: 'default' }}{% if page.url contains '/articles' %} in-articles{% elsif page.url contains '/notes' %} in-notes{% endif %}">
   {% include header.html %}
   <main class="site-main">
     {{ content }}

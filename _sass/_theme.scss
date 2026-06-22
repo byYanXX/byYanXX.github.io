@@ -471,8 +471,34 @@ mark {
   }
 }
 
-/* ============== Notes (sidebar + content + optional TOC) ============== */
-body.layout-note .site-main {
+/* ============== Tags ============== */
+.tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  vertical-align: middle;
+  margin-top: 10px;
+}
+
+.note-header .tags { margin-top: 12px; }
+
+.tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 2px 9px;
+  border-radius: 999px;
+  line-height: 1.65;
+  letter-spacing: 0.2px;
+  background: var(--tag-bg, var(--color-bg-soft));
+  color: var(--tag-fg, var(--color-text-light));
+  white-space: nowrap;
+}
+
+/* ============== Notes / Articles section (sidebar + content + optional TOC) ============== */
+body.in-notes .site-main,
+body.in-articles .site-main {
   max-width: 1200px;
 }
 
@@ -748,10 +774,17 @@ body.layout-note .site-main {
       letter-spacing: -0.4px;
       line-height: 1.25;
     }
-    time {
-      color: var(--color-text-muted);
-      font-size: 0.88rem;
-      font-family: var(--font-mono);
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      time {
+        color: var(--color-text-muted);
+        font-size: 0.88rem;
+        font-family: var(--font-mono);
+      }
+      .tags { margin-top: 0; }
     }
   }
 }
@@ -861,7 +894,8 @@ body.layout-note .site-main {
   .note-toc {
     display: none;
   }
-  body.layout-note .site-main { max-width: var(--max-width); }
+  body.in-notes .site-main,
+  body.in-articles .site-main { max-width: var(--max-width); }
 }
 
 @media (max-width: 768px) {

@@ -1,0 +1,8 @@
+{%- if include.tags and include.tags.size > 0 -%}
+<div class="tags">
+{%- for tag in include.tags -%}
+  {%- assign t = tag | downcase -%}
+  <span class="tag" data-tag="{{ t }}">{{ t }}</span>
+{%- endfor -%}
+</div>
+{%- endif -%}

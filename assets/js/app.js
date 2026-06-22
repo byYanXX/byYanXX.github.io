@@ -69,7 +69,7 @@
       results.innerHTML = '<div class="search-empty">没有结果</div>';
     } else {
       results.innerHTML = matches.map(m => {
-        const typeLabel = m.type === 'note' ? '碎笔' : '文章';
+        const typeLabel = ({note: '碎笔', article: '笔记', post: '文章'})[m.type] || '文章';
         return '<a href="' + m.url + '" class="search-result">' +
           '<div class="search-result-title">' +
             highlight(m.title, query) +
@@ -123,6 +123,40 @@
       input.blur();
     }
   });
+})();
+
+// ---------- Tag colors (deterministic hash → HSL, theme-aware) ----------
+(function () {
+  function paintTags() {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.querySelectorAll('.tag').forEach(el => {
+      const tag = el.dataset.tag || el.textContent.trim();
+      if (!tag) return;
+      let h = 0;
+      for (let i = 0; i < tag.length; i++) {
+        h = ((h << 5) - h) + tag.charCodeAt(i);
+        h |= 0;
+      }
+      const hue = Math.abs(h) % 360;
+      if (dark) {
+        el.style.setProperty('--tag-bg', `hsl(${hue}, 32%, 22%)`);
+        el.style.setProperty('--tag-fg', `hsl(${hue}, 65%, 72%)`);
+      } else {
+        el.style.setProperty('--tag-bg', `hsl(${hue}, 65%, 92%)`);
+        el.style.setProperty('--tag-fg', `hsl(${hue}, 55%, 32%)`);
+      }
+    });
+  }
+
+  paintTags();
+
+  // React to theme changes from any source (toggle button, programmatic)
+  if (window.MutationObserver) {
+    new MutationObserver(paintTags).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    });
+  }
 })();
 
 // ---------- Copy buttons (terminal, code blocks) ----------

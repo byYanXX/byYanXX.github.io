@@ -1,6 +1,13 @@
+{%- comment -%}
+  Render a 3-level tree from a collection grouped by category > subcategory > title.
+  Params:
+    collection — collection name, e.g. "notes" or "articles"
+    title      — sidebar header text (default: 目录)
+{%- endcomment -%}
+{% assign items = site[include.collection] %}
 <aside class="notes-sidebar">
-  <div class="sidebar-title">目录</div>
-  {% assign categories = site.notes | group_by: "category" | sort: "name" %}
+  <div class="sidebar-title">{{ include.title | default: "目录" }}</div>
+  {% assign categories = items | group_by: "category" | sort: "name" %}
   <ul class="tree">
     {% for cat in categories %}
       <li class="tree-l1">
@@ -13,10 +20,10 @@
                 <details open>
                   <summary>{{ sub.name }}</summary>
                   <ul>
-                    {% assign sorted_notes = sub.items | sort: "title" %}
-                    {% for note in sorted_notes %}
+                    {% assign sorted = sub.items | sort: "title" %}
+                    {% for it in sorted %}
                       <li class="tree-l3">
-                        <a href="{{ note.url | relative_url }}"{% if page.url == note.url %} class="active"{% endif %}>{{ note.title }}</a>
+                        <a href="{{ it.url | relative_url }}"{% if page.url == it.url %} class="active"{% endif %}>{{ it.title }}</a>
                       </li>
                     {% endfor %}
                   </ul>
