@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 270" font-family="-apple-system, system-ui, sans-serif">
+  <style>
+    .box { fill: #F5F0E8; stroke: #D8CFBC; stroke-width: 1; }
+    .accent { fill: #FFE2D6; stroke: #C15F3C; stroke-width: 1.4; }
+    .label { fill: #2A2925; font-size: 13px; font-weight: 600; }
+    .sub-text { fill: #5A554C; font-size: 11px; }
+    .accent-text { fill: #C15F3C; font-size: 11px; font-weight: 500; }
+    .arrow { stroke: #8E867B; stroke-width: 1.3; fill: none; }
+    .arrow-shuffle { stroke: #C15F3C; stroke-width: 1.5; fill: none; }
+    .divider { stroke: #D8CFBC; stroke-width: 1; stroke-dasharray: 4,4; }
+    @media (prefers-color-scheme: dark) {
+      .box { fill: #34322F; stroke: #43423E; }
+      .accent { fill: #4A2D1F; stroke: #D97757; }
+      .label { fill: #E8E3D7; }
+      .sub-text { fill: #B0AA9C; }
+      .accent-text { fill: #D97757; }
+      .arrow { stroke: #807A6F; }
+      .arrow-shuffle { stroke: #D97757; }
+      .divider { stroke: #43423E; }
+    }
+  </style>
+  <defs>
+    <marker id="arr1" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M 0 0 L 6 3 L 0 6" fill="#8E867B"/>
+    </marker>
+    <marker id="arr2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M 0 0 L 6 3 L 0 6" fill="#C15F3C"/>
+    </marker>
+  </defs>
+
+  <text x="150" y="22" text-anchor="middle" class="label">Narrow Dependency</text>
+  <text x="150" y="40" text-anchor="middle" class="sub-text">map / filter — 1:1，无 shuffle</text>
+
+  <g text-anchor="middle" class="sub-text">
+    <rect x="40" y="60" width="50" height="28" rx="4" class="box"/><text x="65" y="79">P0</text>
+    <rect x="100" y="60" width="50" height="28" rx="4" class="box"/><text x="125" y="79">P1</text>
+    <rect x="160" y="60" width="50" height="28" rx="4" class="box"/><text x="185" y="79">P2</text>
+    <rect x="220" y="60" width="50" height="28" rx="4" class="box"/><text x="245" y="79">P3</text>
+  </g>
+
+  <g text-anchor="middle" class="accent-text">
+    <rect x="40" y="180" width="50" height="28" rx="4" class="accent"/><text x="65" y="199">P0'</text>
+    <rect x="100" y="180" width="50" height="28" rx="4" class="accent"/><text x="125" y="199">P1'</text>
+    <rect x="160" y="180" width="50" height="28" rx="4" class="accent"/><text x="185" y="199">P2'</text>
+    <rect x="220" y="180" width="50" height="28" rx="4" class="accent"/><text x="245" y="199">P3'</text>
+  </g>
+
+  <g class="arrow" marker-end="url(#arr1)">
+    <line x1="65" y1="90" x2="65" y2="176"/>
+    <line x1="125" y1="90" x2="125" y2="176"/>
+    <line x1="185" y1="90" x2="185" y2="176"/>
+    <line x1="245" y1="90" x2="245" y2="176"/>
+  </g>
+
+  <text x="150" y="232" text-anchor="middle" class="sub-text">同节点流水线，stage 内部</text>
+
+  <line x1="310" y1="50" x2="310" y2="240" class="divider"/>
+
+  <text x="465" y="22" text-anchor="middle" class="label">Wide Dependency (Shuffle)</text>
+  <text x="465" y="40" text-anchor="middle" class="sub-text">groupByKey / reduceByKey / join</text>
+
+  <g text-anchor="middle" class="sub-text">
+    <rect x="355" y="60" width="50" height="28" rx="4" class="box"/><text x="380" y="79">P0</text>
+    <rect x="415" y="60" width="50" height="28" rx="4" class="box"/><text x="440" y="79">P1</text>
+    <rect x="475" y="60" width="50" height="28" rx="4" class="box"/><text x="500" y="79">P2</text>
+    <rect x="535" y="60" width="50" height="28" rx="4" class="box"/><text x="560" y="79">P3</text>
+  </g>
+
+  <g text-anchor="middle" class="accent-text">
+    <rect x="385" y="180" width="50" height="28" rx="4" class="accent"/><text x="410" y="199">P0'</text>
+    <rect x="455" y="180" width="50" height="28" rx="4" class="accent"/><text x="480" y="199">P1'</text>
+    <rect x="525" y="180" width="50" height="28" rx="4" class="accent"/><text x="550" y="199">P2'</text>
+  </g>
+
+  <g class="arrow-shuffle" marker-end="url(#arr2)" opacity="0.85">
+    <line x1="380" y1="90" x2="410" y2="176"/>
+    <line x1="380" y1="90" x2="480" y2="176"/>
+    <line x1="440" y1="90" x2="410" y2="176"/>
+    <line x1="440" y1="90" x2="550" y2="176"/>
+    <line x1="500" y1="90" x2="480" y2="176"/>
+    <line x1="500" y1="90" x2="550" y2="176"/>
+    <line x1="560" y1="90" x2="410" y2="176"/>
+    <line x1="560" y1="90" x2="480" y2="176"/>
+  </g>
+
+  <text x="465" y="232" text-anchor="middle" class="sub-text">跨节点 shuffle，stage 切分点</text>
+</svg>

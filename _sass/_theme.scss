@@ -487,13 +487,223 @@ mark {
   font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 500;
-  padding: 2px 9px;
+  padding: 2px 10px;
   border-radius: 999px;
-  line-height: 1.65;
+  line-height: 1.7;
   letter-spacing: 0.2px;
   background: var(--tag-bg, var(--color-bg-soft));
   color: var(--tag-fg, var(--color-text-light));
   white-space: nowrap;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  cursor: pointer;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+    filter: brightness(1.05);
+    color: var(--tag-fg, var(--color-text-light));
+  }
+  &.active {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+  }
+  .tag-count {
+    margin-left: 4px;
+    opacity: 0.65;
+    font-size: 0.9em;
+  }
+}
+
+/* Tags page */
+.tags-page {
+  > h1 {
+    font-family: var(--font-serif);
+    font-size: 2.1rem;
+    margin-bottom: 8px;
+    color: var(--color-text);
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+  .tags-intro {
+    color: var(--color-text-light);
+    margin-bottom: 24px;
+  }
+}
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 18px 0 28px;
+  border-bottom: 1px solid var(--color-border-soft);
+  margin-bottom: 32px;
+  .tag { font-size: 0.82rem; padding: 4px 12px; }
+  .tag-empty {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    padding: 8px 0;
+  }
+}
+
+.tag-results {
+  .filter-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    color: var(--color-text-light);
+    font-size: 0.92rem;
+    .filter-clear {
+      color: var(--color-primary);
+      cursor: pointer;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      padding: 0;
+      font: inherit;
+    }
+  }
+  .tag-empty {
+    color: var(--color-text-muted);
+    padding: 24px 0;
+    text-align: center;
+  }
+}
+
+/* ============== Article figures + lightbox ============== */
+.article-figure {
+  margin: 24px auto;
+  text-align: center;
+  max-width: 100%;
+
+  img, svg {
+    max-width: 100%;
+    max-height: 380px;
+    height: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-soft);
+    background: var(--color-surface);
+    cursor: zoom-in;
+    transition: box-shadow 0.2s ease;
+    &:hover { box-shadow: var(--shadow-md); }
+  }
+
+  figcaption {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+    line-height: 1.5;
+  }
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  &.open {
+    display: flex;
+    animation: lb-fade 0.18s ease;
+  }
+  .lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 14, 12, 0.78);
+    cursor: zoom-out;
+  }
+  .lightbox-content {
+    position: relative;
+    max-width: 92vw;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+  }
+  .lightbox-img {
+    max-width: 92vw;
+    max-height: 82vh;
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    box-shadow: 0 16px 60px rgba(0,0,0,0.5);
+    cursor: default;
+  }
+  .lightbox-caption {
+    color: #F5F0E8;
+    margin-top: 14px;
+    font-size: 0.9rem;
+    text-align: center;
+    max-width: 80vw;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: -38px;
+    right: -8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #F5F0E8;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover { background: rgba(255, 255, 255, 0.2); }
+  }
+}
+
+@keyframes lb-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ============== Interview Q&A (details/summary) ============== */
+.post-content details,
+.notes-content details {
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  background: var(--color-surface);
+  transition: border-color 0.15s, background 0.15s;
+
+  &[open] {
+    border-color: var(--color-border);
+    padding-bottom: 16px;
+  }
+
+  > summary {
+    cursor: pointer;
+    list-style: none;
+    color: var(--color-text);
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    &::-webkit-details-marker { display: none; }
+    &::marker { display: none; }
+    &::before {
+      content: "▸";
+      display: inline-block;
+      margin-right: 10px;
+      color: var(--color-primary);
+      transition: transform 0.15s ease;
+      font-size: 0.85em;
+    }
+  }
+  &[open] > summary::before {
+    transform: rotate(90deg);
+  }
+
+  > *:not(summary):first-of-type {
+    margin-top: 14px;
+  }
 }
 
 /* ============== Notes / Articles section (sidebar + content + optional TOC) ============== */

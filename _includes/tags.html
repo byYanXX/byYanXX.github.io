@@ -2,7 +2,7 @@
 <div class="tags">
 {%- for tag in include.tags -%}
   {%- assign t = tag | downcase -%}
-  <span class="tag" data-tag="{{ t }}">{{ t }}</span>
+  <a class="tag" href="{{ '/tags/' | relative_url }}?tag={{ t | url_encode }}" data-tag="{{ t }}">{{ t }}</a>
 {%- endfor -%}
 </div>
 {%- endif -%}

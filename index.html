@@ -46,14 +46,15 @@ title: 主页
     <h2>最近发表</h2>
     <a href="{{ '/archive/' | relative_url }}" class="more-link">查看全部 →</a>
   </div>
+  {% assign recent_items = site.posts | concat: site.articles | sort: "date" | reverse %}
   <ul class="post-list">
-    {% for post in site.posts limit:5 %}
+    {% for item in recent_items limit:5 %}
       <li>
-        <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
-        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        <time datetime="{{ item.date | date_to_xmlschema }}">{{ item.date | date: "%Y-%m-%d" }}</time>
+        <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
       </li>
     {% else %}
-      <li class="empty">还没有文章，在 <code>_posts/</code> 里写第一篇吧。</li>
+      <li class="empty">还没有内容，在 <code>_posts/</code> 或 <code>_articles/</code> 里写第一篇吧。</li>
     {% endfor %}
   </ul>
 </section>

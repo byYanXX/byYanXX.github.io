@@ -189,6 +189,217 @@
   });
 })();
 
+// ---------- Article figures (auto-wrap img with caption) + Lightbox ----------
+(function () {
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  const articleImages = document.querySelectorAll(
+    '.post-content > img, .notes-content > img, ' +
+    '.post-content p > img:only-child, .notes-content p > img:only-child'
+  );
+
+  articleImages.forEach(img => {
+    const alt = img.getAttribute('alt') || '';
+    let parent = img.parentNode;
+    // If wrapped in a <p> with only this img, replace the p with a figure
+    if (parent.tagName === 'P' && parent.children.length === 1 && parent.firstChild === img) {
+      const fig = document.createElement('figure');
+      fig.className = 'article-figure';
+      fig.appendChild(img);
+      if (alt) {
+        const cap = document.createElement('figcaption');
+        cap.textContent = alt;
+        fig.appendChild(cap);
+      }
+      parent.replaceWith(fig);
+    } else if (parent.tagName !== 'FIGURE') {
+      const fig = document.createElement('figure');
+      fig.className = 'article-figure';
+      parent.insertBefore(fig, img);
+      fig.appendChild(img);
+      if (alt) {
+        const cap = document.createElement('figcaption');
+        cap.textContent = alt;
+        fig.appendChild(cap);
+      }
+    }
+  });
+
+  // Lightbox singleton
+  let lb = null;
+  function ensureLB() {
+    if (lb) return lb;
+    lb = document.createElement('div');
+    lb.className = 'lightbox';
+    lb.innerHTML =
+      '<div class="lightbox-backdrop"></div>' +
+      '<div class="lightbox-content">' +
+        '<button class="lightbox-close" aria-label="关闭">&times;</button>' +
+        '<img class="lightbox-img" alt="">' +
+        '<div class="lightbox-caption"></div>' +
+      '</div>';
+    document.body.appendChild(lb);
+    lb.querySelector('.lightbox-backdrop').addEventListener('click', closeLB);
+    lb.querySelector('.lightbox-close').addEventListener('click', closeLB);
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && lb.classList.contains('open')) closeLB();
+    });
+    return lb;
+  }
+
+  function openLB(src, caption) {
+    const node = ensureLB();
+    node.querySelector('.lightbox-img').src = src;
+    node.querySelector('.lightbox-caption').textContent = caption || '';
+    node.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLB() {
+    if (!lb) return;
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.article-figure img').forEach(img => {
+    img.addEventListener('click', () => {
+      openLB(img.src, img.getAttribute('alt') || '');
+    });
+  });
+})();
+
+// ---------- Tags page (cloud + filtered timeline list) ----------
+(function () {
+  const cloud = document.querySelector('.tag-cloud');
+  const results = document.querySelector('.tag-results');
+  if (!cloud || !results || !window.ALL_ITEMS) return;
+
+  const items = window.ALL_ITEMS;
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  // Count tags
+  const counts = {};
+  items.forEach(it => {
+    (it.tags || []).forEach(t => {
+      const k = String(t).toLowerCase();
+      counts[k] = (counts[k] || 0) + 1;
+    });
+  });
+
+  const sortedTags = Object.keys(counts).sort();
+
+  if (sortedTags.length === 0) {
+    cloud.innerHTML = '<span class="tag-empty">还没有任何标签</span>';
+  } else {
+    cloud.innerHTML = sortedTags.map(tag => {
+      const url = '?tag=' + encodeURIComponent(tag);
+      return '<a class="tag tag-link" data-tag="' + esc(tag) + '" href="' + url + '">' +
+        esc(tag) + ' <span class="tag-count">' + counts[tag] + '</span></a>';
+    }).join('');
+  }
+
+  function repaintCloudColors() {
+    // Reuse the same hash-based coloring as the tag-painter IIFE
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    cloud.querySelectorAll('.tag').forEach(el => {
+      const tag = el.dataset.tag || el.textContent.trim();
+      if (!tag) return;
+      let h = 0;
+      for (let i = 0; i < tag.length; i++) { h = ((h << 5) - h) + tag.charCodeAt(i); h |= 0; }
+      const hue = Math.abs(h) % 360;
+      if (dark) {
+        el.style.setProperty('--tag-bg', 'hsl(' + hue + ', 32%, 22%)');
+        el.style.setProperty('--tag-fg', 'hsl(' + hue + ', 65%, 72%)');
+      } else {
+        el.style.setProperty('--tag-bg', 'hsl(' + hue + ', 65%, 92%)');
+        el.style.setProperty('--tag-fg', 'hsl(' + hue + ', 55%, 32%)');
+      }
+    });
+  }
+  repaintCloudColors();
+  if (window.MutationObserver) {
+    new MutationObserver(repaintCloudColors).observe(document.documentElement, {
+      attributes: true, attributeFilter: ['data-theme']
+    });
+  }
+
+  function getActiveTag() {
+    const params = new URLSearchParams(window.location.search);
+    return (params.get('tag') || '').toLowerCase();
+  }
+
+  function render() {
+    const tag = getActiveTag();
+    cloud.querySelectorAll('.tag-link').forEach(a =>
+      a.classList.toggle('active', a.dataset.tag === tag));
+
+    const filtered = tag
+      ? items.filter(it => (it.tags || []).map(t => String(t).toLowerCase()).includes(tag))
+      : items.slice();
+
+    filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    let banner = '';
+    if (tag) {
+      banner = '<div class="filter-banner">当前筛选：<span class="tag" data-tag="' + esc(tag) + '">' +
+        esc(tag) + '</span> · 共 ' + filtered.length + ' 篇 ' +
+        '<button class="filter-clear" type="button">清除筛选</button></div>';
+    }
+
+    if (filtered.length === 0) {
+      results.innerHTML = banner + '<p class="tag-empty">没有匹配的内容</p>';
+      return;
+    }
+
+    const byYear = {};
+    filtered.forEach(it => {
+      const y = (it.date || '').slice(0, 4) || '未知';
+      (byYear[y] = byYear[y] || []).push(it);
+    });
+
+    const years = Object.keys(byYear).sort().reverse();
+    const html = years.map(y => {
+      const lis = byYear[y].map(it => {
+        const d = it.date ? it.date.slice(5, 10) : '--';
+        return '<li class="timeline-item"><time>' + esc(d) + '</time>' +
+          '<a href="' + esc(it.url) + '">' + esc(it.title) + '</a></li>';
+      }).join('');
+      return '<div class="archive-year"><h2>' + esc(y) + '</h2>' +
+        '<ul class="timeline">' + lis + '</ul></div>';
+    }).join('');
+
+    results.innerHTML = banner + html;
+
+    // Repaint the inline tag chip in the banner
+    repaintCloudColors();
+
+    const clear = results.querySelector('.filter-clear');
+    if (clear) clear.addEventListener('click', () => {
+      history.pushState({}, '', window.location.pathname);
+      render();
+    });
+  }
+
+  cloud.addEventListener('click', e => {
+    const a = e.target.closest('.tag-link');
+    if (!a) return;
+    e.preventDefault();
+    const tag = a.dataset.tag;
+    const url = window.location.pathname + '?tag=' + encodeURIComponent(tag);
+    history.pushState({}, '', url);
+    render();
+  });
+
+  window.addEventListener('popstate', render);
+  render();
+})();
+
 // ---------- Note TOC (right rail on individual note pages) ----------
 (function () {
   const tocEl = document.querySelector('.note-toc');

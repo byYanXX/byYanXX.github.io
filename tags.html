@@ -1,0 +1,37 @@
+---
+layout: default
+title: 标签
+permalink: /tags/
+---
+<section class="tags-page">
+  <h1>标签</h1>
+  <p class="tags-intro">点击任意标签查看该标签下的所有内容。</p>
+
+  <div class="tag-cloud"></div>
+
+  <div class="tag-results"></div>
+</section>
+
+<script>
+{%- assign all = site.posts | concat: site.articles | concat: site.notes -%}
+{%- assign tagged = "" | split: "" -%}
+{%- for item in all -%}
+  {%- if item.tags and item.tags.size > 0 -%}
+    {%- assign tagged = tagged | push: item -%}
+  {%- endif -%}
+{%- endfor -%}
+window.ALL_ITEMS = [
+{%- for item in tagged -%}
+  {%- assign type_label = "post" -%}
+  {%- if item.collection == "articles" -%}{%- assign type_label = "article" -%}{%- endif -%}
+  {%- if item.collection == "notes" -%}{%- assign type_label = "note" -%}{%- endif -%}
+{
+"title": {{ item.title | jsonify }},
+"url": {{ item.url | relative_url | jsonify }},
+"date": {{ item.date | default: site.time | date_to_xmlschema | jsonify }},
+"type": {{ type_label | jsonify }},
+"tags": {{ item.tags | jsonify }}
+}{%- unless forloop.last %},{% endunless -%}
+{%- endfor -%}
+];
+</script>

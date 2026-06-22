@@ -5,6 +5,7 @@
       <li><a href="{{ '/' | relative_url }}"{% if page.url == '/' %} class="active"{% endif %}>主页</a></li>
       <li><a href="{{ '/articles/' | relative_url }}"{% if page.url contains '/articles' %} class="active"{% endif %}>笔记</a></li>
       <li><a href="{{ '/notes/' | relative_url }}"{% if page.url contains '/notes' %} class="active"{% endif %}>数据碎笔</a></li>
+      <li><a href="{{ '/tags/' | relative_url }}"{% if page.url contains '/tags' %} class="active"{% endif %}>标签</a></li>
       <li><a href="{{ '/archive/' | relative_url }}"{% if page.url contains '/archive' %} class="active"{% endif %}>归档</a></li>
     </ul>
 
