@@ -1,0 +1,15 @@
+---
+layout: null
+permalink: /search.json
+---
+{% assign items = site.posts | concat: site.notes %}[
+{% for item in items %}{
+  "title": {{ item.title | default: "" | jsonify }},
+  "url": {{ item.url | relative_url | jsonify }},
+  "date": {{ item.date | default: site.time | date_to_xmlschema | jsonify }},
+  "type": {% if item.collection == "notes" %}"note"{% else %}"post"{% endif %},
+  "category": {{ item.category | default: "" | jsonify }},
+  "subcategory": {{ item.subcategory | default: "" | jsonify }},
+  "content": {{ item.content | strip_html | normalize_whitespace | jsonify }}
+}{% unless forloop.last %},{% endunless %}
+{% endfor %}]
