@@ -6,6 +6,8 @@ subcategory: headline1.1
 
 这是 **Headline1 / headline1.1 / headline1.1.1** 路径下的叶子笔记示例。
 
+![headline1.1.2 笔记在浏览器中的渲染效果（暗色主题）](/assets/images/notes/headline-rendered.png)
+
 ## 如何使用三级目录
 
 每篇笔记的 frontmatter 需要三个字段：

@@ -157,6 +157,9 @@
       attributeFilter: ['data-theme']
     });
   }
+
+  // Also expose for cases where new tag elements appear at runtime (filter banner)
+  document.documentElement.addEventListener('repaint-tags', paintTags);
 })();
 
 // ---------- Copy buttons (terminal, code blocks) ----------
@@ -270,120 +273,76 @@
   });
 })();
 
-// ---------- Tags page (cloud + filtered timeline list) ----------
+// ---------- Tags page (filter server-rendered list by URL ?tag=) ----------
 (function () {
   const cloud = document.querySelector('.tag-cloud');
-  const results = document.querySelector('.tag-results');
-  if (!cloud || !results || !window.ALL_ITEMS) return;
-
-  const items = window.ALL_ITEMS;
+  const resultsRoot = document.querySelector('.tag-results');
+  if (!cloud || !resultsRoot) return;
+  const items = resultsRoot.querySelectorAll('.timeline-item');
+  if (items.length === 0) return;
 
   function esc(s) {
     return String(s).replace(/[&<>"']/g, c =>
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
-  // Count tags
-  const counts = {};
-  items.forEach(it => {
-    (it.tags || []).forEach(t => {
-      const k = String(t).toLowerCase();
-      counts[k] = (counts[k] || 0) + 1;
-    });
-  });
-
-  const sortedTags = Object.keys(counts).sort();
-
-  if (sortedTags.length === 0) {
-    cloud.innerHTML = '<span class="tag-empty">还没有任何标签</span>';
-  } else {
-    cloud.innerHTML = sortedTags.map(tag => {
-      const url = '?tag=' + encodeURIComponent(tag);
-      return '<a class="tag tag-link" data-tag="' + esc(tag) + '" href="' + url + '">' +
-        esc(tag) + ' <span class="tag-count">' + counts[tag] + '</span></a>';
-    }).join('');
-  }
-
-  function repaintCloudColors() {
-    // Reuse the same hash-based coloring as the tag-painter IIFE
-    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-    cloud.querySelectorAll('.tag').forEach(el => {
-      const tag = el.dataset.tag || el.textContent.trim();
-      if (!tag) return;
-      let h = 0;
-      for (let i = 0; i < tag.length; i++) { h = ((h << 5) - h) + tag.charCodeAt(i); h |= 0; }
-      const hue = Math.abs(h) % 360;
-      if (dark) {
-        el.style.setProperty('--tag-bg', 'hsl(' + hue + ', 32%, 22%)');
-        el.style.setProperty('--tag-fg', 'hsl(' + hue + ', 65%, 72%)');
-      } else {
-        el.style.setProperty('--tag-bg', 'hsl(' + hue + ', 65%, 92%)');
-        el.style.setProperty('--tag-fg', 'hsl(' + hue + ', 55%, 32%)');
-      }
-    });
-  }
-  repaintCloudColors();
-  if (window.MutationObserver) {
-    new MutationObserver(repaintCloudColors).observe(document.documentElement, {
-      attributes: true, attributeFilter: ['data-theme']
-    });
-  }
-
   function getActiveTag() {
-    const params = new URLSearchParams(window.location.search);
-    return (params.get('tag') || '').toLowerCase();
+    return (new URLSearchParams(window.location.search).get('tag') || '').toLowerCase();
   }
 
-  function render() {
+  function applyFilter() {
     const tag = getActiveTag();
     cloud.querySelectorAll('.tag-link').forEach(a =>
       a.classList.toggle('active', a.dataset.tag === tag));
 
-    const filtered = tag
-      ? items.filter(it => (it.tags || []).map(t => String(t).toLowerCase()).includes(tag))
-      : items.slice();
+    let total = 0;
+    items.forEach(li => {
+      const tags = (li.dataset.tags || '').split(',').filter(Boolean);
+      const visible = !tag || tags.includes(tag);
+      li.style.display = visible ? '' : 'none';
+      if (visible) total++;
+    });
 
-    filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Hide empty year groups
+    resultsRoot.querySelectorAll('.archive-year').forEach(yr => {
+      const anyVisible = Array.from(yr.querySelectorAll('.timeline-item'))
+        .some(li => li.style.display !== 'none');
+      yr.style.display = anyVisible ? '' : 'none';
+    });
 
-    let banner = '';
+    // Remove existing banner
+    const oldBanner = resultsRoot.querySelector(':scope > .filter-banner');
+    if (oldBanner) oldBanner.remove();
+
+    // Show banner + repaint inline chip color
     if (tag) {
-      banner = '<div class="filter-banner">当前筛选：<span class="tag" data-tag="' + esc(tag) + '">' +
-        esc(tag) + '</span> · 共 ' + filtered.length + ' 篇 ' +
-        '<button class="filter-clear" type="button">清除筛选</button></div>';
+      const banner = document.createElement('div');
+      banner.className = 'filter-banner';
+      banner.innerHTML = '当前筛选：<span class="tag" data-tag="' + esc(tag) + '">' +
+        esc(tag) + '</span> · 共 ' + total + ' 篇 ' +
+        '<button class="filter-clear" type="button">清除筛选</button>';
+      resultsRoot.prepend(banner);
+      banner.querySelector('.filter-clear').addEventListener('click', () => {
+        history.pushState({}, '', window.location.pathname);
+        applyFilter();
+      });
     }
 
-    if (filtered.length === 0) {
-      results.innerHTML = banner + '<p class="tag-empty">没有匹配的内容</p>';
-      return;
+    // Empty state
+    let empty = resultsRoot.querySelector(':scope > .tag-empty-msg');
+    if (total === 0 && tag) {
+      if (!empty) {
+        empty = document.createElement('p');
+        empty.className = 'tag-empty tag-empty-msg';
+        empty.textContent = '没有匹配的内容';
+        resultsRoot.appendChild(empty);
+      }
+    } else if (empty) {
+      empty.remove();
     }
 
-    const byYear = {};
-    filtered.forEach(it => {
-      const y = (it.date || '').slice(0, 4) || '未知';
-      (byYear[y] = byYear[y] || []).push(it);
-    });
-
-    const years = Object.keys(byYear).sort().reverse();
-    const html = years.map(y => {
-      const lis = byYear[y].map(it => {
-        const d = it.date ? it.date.slice(5, 10) : '--';
-        return '<li class="timeline-item"><time>' + esc(d) + '</time>' +
-          '<a href="' + esc(it.url) + '">' + esc(it.title) + '</a></li>';
-      }).join('');
-      return '<div class="archive-year"><h2>' + esc(y) + '</h2>' +
-        '<ul class="timeline">' + lis + '</ul></div>';
-    }).join('');
-
-    results.innerHTML = banner + html;
-
-    // Repaint the inline tag chip in the banner
-    repaintCloudColors();
-
-    const clear = results.querySelector('.filter-clear');
-    if (clear) clear.addEventListener('click', () => {
-      history.pushState({}, '', window.location.pathname);
-      render();
-    });
+    // Repaint the inline tag chip in the banner via the global tag painter
+    document.documentElement.dispatchEvent(new CustomEvent('repaint-tags'));
   }
 
   cloud.addEventListener('click', e => {
@@ -393,11 +352,11 @@
     const tag = a.dataset.tag;
     const url = window.location.pathname + '?tag=' + encodeURIComponent(tag);
     history.pushState({}, '', url);
-    render();
+    applyFilter();
   });
 
-  window.addEventListener('popstate', render);
-  render();
+  window.addEventListener('popstate', applyFilter);
+  applyFilter();
 })();
 
 // ---------- Note TOC (right rail on individual note pages) ----------

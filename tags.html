@@ -7,31 +7,52 @@ permalink: /tags/
   <h1>标签</h1>
   <p class="tags-intro">点击任意标签查看该标签下的所有内容。</p>
 
-  <div class="tag-cloud"></div>
+  {%- assign all = site.posts | concat: site.articles | concat: site.notes -%}
+  {%- assign all_tagged = "" | split: "" -%}
+  {%- for item in all -%}
+    {%- if item.tags and item.tags.size > 0 -%}
+      {%- assign all_tagged = all_tagged | push: item -%}
+    {%- endif -%}
+  {%- endfor -%}
 
-  <div class="tag-results"></div>
+  {%- assign tag_list = "" | split: "" -%}
+  {%- for item in all_tagged -%}
+    {%- for t in item.tags -%}
+      {%- assign tag_lower = t | downcase -%}
+      {%- assign tag_list = tag_list | push: tag_lower -%}
+    {%- endfor -%}
+  {%- endfor -%}
+  {%- assign unique_tags = tag_list | uniq | sort -%}
+
+  <div class="tag-cloud">
+    {%- for tag in unique_tags -%}
+      {%- assign cnt = 0 -%}
+      {%- for t in tag_list -%}{%- if t == tag -%}{%- assign cnt = cnt | plus: 1 -%}{%- endif -%}{%- endfor -%}
+      <a class="tag tag-link" data-tag="{{ tag }}" href="?tag={{ tag | url_encode }}">{{ tag }} <span class="tag-count">{{ cnt }}</span></a>
+    {%- endfor -%}
+    {%- if unique_tags.size == 0 -%}
+      <span class="tag-empty">还没有任何标签</span>
+    {%- endif -%}
+  </div>
+
+  <div class="tag-results">
+    {%- if all_tagged.size > 0 -%}
+      {%- assign sorted = all_tagged | sort: "date" | reverse -%}
+      {%- assign by_year = sorted | group_by_exp: "i", "i.date | date: '%Y'" -%}
+      {%- for year_group in by_year -%}
+        <div class="archive-year">
+          <h2>{{ year_group.name }}</h2>
+          <ul class="timeline">
+            {%- for item in year_group.items -%}
+              {%- assign tags_csv = item.tags | join: "," | downcase -%}
+              <li class="timeline-item" data-tags="{{ tags_csv }}">
+                <time>{{ item.date | date: "%m-%d" }}</time>
+                <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
 </section>
-
-<script>
-{%- assign all = site.posts | concat: site.articles | concat: site.notes -%}
-{%- assign tagged = "" | split: "" -%}
-{%- for item in all -%}
-  {%- if item.tags and item.tags.size > 0 -%}
-    {%- assign tagged = tagged | push: item -%}
-  {%- endif -%}
-{%- endfor -%}
-window.ALL_ITEMS = [
-{%- for item in tagged -%}
-  {%- assign type_label = "post" -%}
-  {%- if item.collection == "articles" -%}{%- assign type_label = "article" -%}{%- endif -%}
-  {%- if item.collection == "notes" -%}{%- assign type_label = "note" -%}{%- endif -%}
-{
-"title": {{ item.title | jsonify }},
-"url": {{ item.url | relative_url | jsonify }},
-"date": {{ item.date | default: site.time | date_to_xmlschema | jsonify }},
-"type": {{ type_label | jsonify }},
-"tags": {{ item.tags | jsonify }}
-}{%- unless forloop.last %},{% endunless -%}
-{%- endfor -%}
-];
-</script>
