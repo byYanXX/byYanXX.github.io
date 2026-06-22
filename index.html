@@ -1,0 +1,25 @@
+---
+layout: default
+title: 主页
+---
+<section class="hero">
+  <h1>你好，我是 <span class="hero-accent">yby</span></h1>
+  <p class="hero-subtitle">这里是我的数据笔记与碎思，记录工作中遇到的问题、解法与小观察。</p>
+</section>
+
+<section class="recent">
+  <div class="recent-header">
+    <h2>最近发表</h2>
+    <a href="{{ '/archive/' | relative_url }}" class="more-link">查看全部 →</a>
+  </div>
+  <ul class="post-list">
+    {% for post in site.posts limit:5 %}
+      <li>
+        <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      </li>
+    {% else %}
+      <li class="empty">还没有文章，在 <code>_posts/</code> 里写第一篇吧。</li>
+    {% endfor %}
+  </ul>
+</section>

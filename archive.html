@@ -1,0 +1,26 @@
+---
+layout: default
+title: 归档
+permalink: /archive/
+---
+<section class="archive">
+  <h1>归档</h1>
+  {% if site.posts.size == 0 %}
+    <p style="color: var(--color-text-muted);">还没有文章。</p>
+  {% else %}
+    {% assign posts_by_year = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+    {% for year_group in posts_by_year %}
+      <div class="archive-year">
+        <h2>{{ year_group.name }}</h2>
+        <ul class="timeline">
+          {% for post in year_group.items %}
+            <li class="timeline-item">
+              <time>{{ post.date | date: "%m-%d" }}</time>
+              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  {% endif %}
+</section>

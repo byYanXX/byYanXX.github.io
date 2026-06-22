@@ -1,0 +1,31 @@
+<aside class="notes-sidebar">
+  <div class="sidebar-title">目录</div>
+  {% assign categories = site.notes | group_by: "category" | sort: "name" %}
+  <ul class="tree">
+    {% for cat in categories %}
+      <li class="tree-l1">
+        <details open>
+          <summary>{{ cat.name }}</summary>
+          {% assign subcats = cat.items | group_by: "subcategory" | sort: "name" %}
+          <ul>
+            {% for sub in subcats %}
+              <li class="tree-l2">
+                <details open>
+                  <summary>{{ sub.name }}</summary>
+                  <ul>
+                    {% assign sorted_notes = sub.items | sort: "title" %}
+                    {% for note in sorted_notes %}
+                      <li class="tree-l3">
+                        <a href="{{ note.url | relative_url }}"{% if page.url == note.url %} class="active"{% endif %}>{{ note.title }}</a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </details>
+              </li>
+            {% endfor %}
+          </ul>
+        </details>
+      </li>
+    {% endfor %}
+  </ul>
+</aside>
