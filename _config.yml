@@ -3,6 +3,7 @@ description: 数据笔记与碎思
 author: yby
 baseurl: ""
 url: "https://byyanxx.github.io"
+repo_url: "https://github.com/byYanXX/byYanXX.github.io"
 lang: zh-CN
 
 markdown: kramdown

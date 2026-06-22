@@ -124,3 +124,114 @@
     }
   });
 })();
+
+// ---------- Copy buttons (terminal, code blocks) ----------
+(function () {
+  async function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } finally { document.body.removeChild(ta); }
+  }
+
+  document.querySelectorAll('[data-copy]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = btn.getAttribute('data-copy');
+      try {
+        await copyText(text);
+        btn.classList.add('copied');
+        setTimeout(() => btn.classList.remove('copied'), 1600);
+      } catch (e) {
+        console.error('Copy failed:', e);
+      }
+    });
+  });
+})();
+
+// ---------- Note TOC (right rail on individual note pages) ----------
+(function () {
+  const tocEl = document.querySelector('.note-toc');
+  const tocList = tocEl && tocEl.querySelector('.toc-list');
+  const content = document.querySelector('.notes-content');
+  if (!tocEl || !tocList || !content) return;
+
+  const headings = Array.from(content.querySelectorAll('h2, h3, h4'))
+    .filter(h => !h.closest('.note-header'));
+
+  if (headings.length === 0) {
+    tocEl.classList.add('is-empty');
+    return;
+  }
+
+  function slugify(text) {
+    return String(text).trim().toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w一-鿿-]/g, '')
+      || 'h';
+  }
+
+  const usedIds = new Set();
+  headings.forEach((h, i) => {
+    let id = h.id;
+    if (!id) {
+      id = slugify(h.textContent);
+      let candidate = id, n = 1;
+      while (usedIds.has(candidate) || document.getElementById(candidate)) {
+        candidate = id + '-' + (++n);
+      }
+      id = candidate;
+      h.id = id;
+    }
+    usedIds.add(id);
+  });
+
+  tocList.innerHTML = headings.map(h => {
+    const level = h.tagName.toLowerCase();
+    const text = h.textContent.replace(/[<>&"']/g, c =>
+      ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' }[c]));
+    return `<li class="toc-${level}"><a href="#${h.id}" data-toc-id="${h.id}">${text}</a></li>`;
+  }).join('');
+
+  const links = Array.from(tocList.querySelectorAll('a'));
+  const linkById = Object.fromEntries(links.map(a => [a.dataset.tocId, a]));
+
+  // Smooth scroll handled by CSS scroll-behavior + scroll-margin-top
+  links.forEach(a => {
+    a.addEventListener('click', () => {
+      links.forEach(l => l.classList.remove('active'));
+      a.classList.add('active');
+    });
+  });
+
+  // Active section tracking via IntersectionObserver
+  if ('IntersectionObserver' in window) {
+    const visible = new Set();
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (en.isIntersecting) visible.add(en.target.id);
+        else visible.delete(en.target.id);
+      });
+      let activeId = null;
+      for (const h of headings) {
+        if (visible.has(h.id)) { activeId = h.id; break; }
+      }
+      if (!activeId) {
+        // Fallback: pick last heading above viewport top
+        const top = window.scrollY + (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 60) + 40;
+        for (let i = headings.length - 1; i >= 0; i--) {
+          if (headings[i].offsetTop <= top) { activeId = headings[i].id; break; }
+        }
+      }
+      links.forEach(l => l.classList.toggle('active', l.dataset.tocId === activeId));
+    }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });
+
+    headings.forEach(h => obs.observe(h));
+  }
+})();

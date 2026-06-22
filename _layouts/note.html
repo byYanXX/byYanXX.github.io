@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-<div class="notes-container">
+<div class="notes-container has-toc">
   {% include notes-sidebar.html %}
   <article class="notes-content">
     <header class="note-header">
@@ -10,4 +10,9 @@ layout: default
     </header>
     {{ content }}
   </article>
+  <aside class="note-toc" aria-label="文章目录">
+    <div class="toc-title">目录</div>
+    <ul class="toc-list"></ul>
+    <div class="toc-empty">本文无小节</div>
+  </aside>
 </div>
