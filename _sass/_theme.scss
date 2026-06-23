@@ -719,6 +719,7 @@ body.in-articles .site-main {
   gap: 36px;
   align-items: flex-start;
   position: relative;
+  transition: padding-top 0.2s ease;
 }
 
 .notes-sidebar {
@@ -806,9 +807,10 @@ body.in-articles .site-main {
   svg { width: 14px; height: 14px; display: block; }
 }
 
-/* Desktop collapsed state: hide sidebar, reveal the expand button */
+/* Desktop collapsed state: hide sidebar, give the expand button its own row above the article */
 .notes-container.sidebar-collapsed {
   gap: 0;
+  padding-top: 50px;
 
   > .notes-sidebar {
     width: 0;
@@ -820,7 +822,11 @@ body.in-articles .site-main {
     opacity: 0;
     pointer-events: none;
   }
-  > .sidebar-expand-btn { display: inline-flex; }
+  > .sidebar-expand-btn {
+    display: inline-flex;
+    top: 4px;
+    left: 0;
+  }
 }
 
 .sidebar-backdrop { display: none; }
