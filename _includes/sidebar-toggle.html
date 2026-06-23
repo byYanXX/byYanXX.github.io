@@ -1,14 +1,9 @@
 {%- comment -%}
-  Sidebar toggle button + backdrop, shared by article/note layouts.
-  Icons:
-    .icon-collapse — chevron-left, shown when the panel is currently visible
-    .icon-expand   — chevron-right, shown when the panel is hidden
+  Expand-button + drawer backdrop. The collapse-button lives inside
+  kb-sidebar.html (so it sits in the title row, never overlapping content).
 {%- endcomment -%}
-<button class="sidebar-toggle" type="button" aria-label="切换目录" aria-controls="kb-sidebar" aria-expanded="true">
-  <svg class="icon-collapse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <polyline points="15 18 9 12 15 6"></polyline>
-  </svg>
-  <svg class="icon-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<button class="sidebar-expand-btn" type="button" aria-label="展开目录" aria-controls="kb-sidebar">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <polyline points="9 18 15 12 9 6"></polyline>
   </svg>
 </button>

@@ -6,7 +6,14 @@
 {%- endcomment -%}
 {% assign items = site[include.collection] %}
 <aside class="notes-sidebar" id="kb-sidebar">
-  <div class="sidebar-title">{{ include.title | default: "目录" }}</div>
+  <div class="sidebar-header">
+    <span class="sidebar-title">{{ include.title | default: "目录" }}</span>
+    <button class="sidebar-collapse-btn" type="button" aria-label="收起目录" aria-controls="kb-sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+  </div>
   {% assign categories = items | group_by: "category" | sort: "name" %}
   <ul class="tree">
     {% for cat in categories %}

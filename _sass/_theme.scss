@@ -732,48 +732,81 @@ body.in-articles .site-main {
   border-right: 1px solid var(--color-border-soft);
   transition: opacity 0.18s ease;
 
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--color-border-soft);
+  }
   .sidebar-title {
     font-size: 0.74rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.2px;
     color: var(--color-text-muted);
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    padding-right: 40px;
-    border-bottom: 1px solid var(--color-border-soft);
+    flex: 1;
+    min-width: 0;
   }
 }
 
-/* Sidebar toggle button — sits just inside the sidebar, next to its divider */
-.sidebar-toggle {
-  position: absolute;
-  top: -2px;
-  left: calc(var(--sidebar-width) - 40px);
-  z-index: 20;
-  width: 32px;
-  height: 32px;
+/* Collapse button — inline with sidebar title, never overlaps the divider */
+.sidebar-collapse-btn {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text-light);
+  background: transparent;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s, background 0.15s, left 0.22s ease;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
 
   &:hover {
     color: var(--color-primary);
     border-color: var(--color-primary);
     background: var(--color-primary-soft);
   }
-
-  svg { width: 16px; height: 16px; display: block; }
-  .icon-expand { display: none; }
+  svg { width: 14px; height: 14px; display: block; }
 }
 
-/* Collapsed state on desktop: hide sidebar, slide toggle to the left edge, flip icon */
+/* Expand button — protrudes from the left edge when sidebar is collapsed */
+.sidebar-expand-btn {
+  position: absolute;
+  top: 4px;
+  left: -2px;
+  z-index: 20;
+  width: 26px;
+  height: 38px;
+  padding: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: none;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--color-text-light);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: color 0.15s, border-color 0.15s, background 0.15s, opacity 0.15s;
+
+  &:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+    opacity: 1;
+  }
+  svg { width: 14px; height: 14px; display: block; }
+}
+
+/* Desktop collapsed state: hide sidebar, reveal the expand button */
 .notes-container.sidebar-collapsed {
   gap: 0;
 
@@ -787,11 +820,7 @@ body.in-articles .site-main {
     opacity: 0;
     pointer-events: none;
   }
-  > .sidebar-toggle {
-    left: -2px;
-    .icon-collapse { display: none; }
-    .icon-expand { display: block; }
-  }
+  > .sidebar-expand-btn { display: inline-flex; }
 }
 
 .sidebar-backdrop { display: none; }
@@ -1195,15 +1224,32 @@ body.in-articles .site-main {
 
   /* Sidebar becomes a slide-in drawer on mobile */
   .notes-container { flex-direction: column; gap: 0; }
-  .sidebar-toggle {
-    position: sticky;
-    top: calc(var(--header-height) + 8px);
-    left: 0;
-    margin-bottom: 14px;
-    width: 40px;
-    height: 40px;
-    box-shadow: var(--shadow-sm);
+
+  /* Expand trigger is a floating bottom-left button — never overlaps title or text */
+  .sidebar-expand-btn {
+    display: inline-flex;
+    position: fixed;
+    top: auto;
+    left: 16px;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    width: 46px;
+    height: 46px;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-md);
+    opacity: 1;
+    z-index: 70;
+    svg { width: 18px; height: 18px; }
   }
+
+  /* Collapse button inside the drawer — bigger tap target */
+  .sidebar-collapse-btn {
+    width: 34px;
+    height: 34px;
+    svg { width: 18px; height: 18px; }
+  }
+
   .notes-sidebar {
     position: fixed;
     top: var(--header-height);
@@ -1214,7 +1260,7 @@ body.in-articles .site-main {
     background: var(--color-bg);
     border-right: 1px solid var(--color-border);
     border-bottom: none;
-    padding: 20px 18px 24px;
+    padding: 18px 18px 24px;
     margin: 0;
     z-index: 90;
     transform: translateX(-100%);
@@ -1224,11 +1270,6 @@ body.in-articles .site-main {
     -webkit-overflow-scrolling: touch;
     opacity: 0;
     pointer-events: none;
-  }
-  /* Mobile default (drawer closed): show expand icon */
-  .notes-container:not(.sidebar-open) > .sidebar-toggle {
-    .icon-collapse { display: none; }
-    .icon-expand { display: block; }
   }
   .notes-container.sidebar-open {
     > .notes-sidebar {
@@ -1243,19 +1284,10 @@ body.in-articles .site-main {
       background: rgba(15, 14, 12, 0.45);
       z-index: 80;
     }
-    /* Float the toggle onto the drawer's right edge so it's tappable to close */
-    > .sidebar-toggle {
-      position: fixed;
-      top: calc(var(--header-height) + 10px);
-      left: calc(min(82vw, 320px) - 48px);
-      z-index: 95;
-      .icon-collapse { display: block; }
-      .icon-expand { display: none; }
-    }
+    > .sidebar-expand-btn { display: none; }
   }
-  /* Neutralize the desktop-collapsed rule on mobile */
-  .notes-container.sidebar-collapsed > .notes-sidebar { padding: 20px 18px 24px; }
-  .notes-container.sidebar-collapsed > .sidebar-toggle { left: 0; }
+  /* Neutralize the desktop-collapsed treatment on mobile */
+  .notes-container.sidebar-collapsed > .notes-sidebar { padding: 18px 18px 24px; }
 
   /* Larger tap targets in the tree */
   .tree {
@@ -1310,7 +1342,7 @@ body.in-articles .site-main {
 
 /* Tap-target hint: on touch devices, ensure interactive controls aren't tiny */
 @media (hover: none) and (pointer: coarse) {
-  .theme-toggle, .sidebar-toggle { min-width: 40px; min-height: 40px; }
+  .theme-toggle, .sidebar-expand-btn, .sidebar-collapse-btn { min-width: 40px; min-height: 40px; }
   .tree summary { padding: 7px 0; }
   .tree .tree-l3 a { padding: 7px 10px; }
 }
