@@ -5,7 +5,7 @@
     title      — sidebar header text (default: 目录)
 {%- endcomment -%}
 {% assign items = site[include.collection] %}
-<aside class="notes-sidebar">
+<aside class="notes-sidebar" id="kb-sidebar">
   <div class="sidebar-title">{{ include.title | default: "目录" }}</div>
   {% assign categories = items | group_by: "category" | sort: "name" %}
   <ul class="tree">

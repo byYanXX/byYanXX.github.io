@@ -359,6 +359,89 @@
   applyFilter();
 })();
 
+// ---------- Sidebar toggle (knowledge base sidebar — desktop collapse + mobile drawer) ----------
+(function () {
+  const container = document.querySelector('.notes-container');
+  const btn = container && container.querySelector(':scope > .sidebar-toggle');
+  const sidebar = container && container.querySelector(':scope > .notes-sidebar');
+  const backdrop = container && container.querySelector(':scope > .sidebar-backdrop');
+  if (!container || !btn || !sidebar) return;
+
+  const STORAGE_KEY = 'kb-sidebar-collapsed';
+  const mqMobile = window.matchMedia('(max-width: 768px)');
+
+  function setExpanded(expanded) {
+    btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    btn.setAttribute('aria-label', expanded ? '隐藏目录' : '显示目录');
+  }
+
+  function applyDesktopState() {
+    let collapsed = false;
+    try { collapsed = localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) {}
+    container.classList.toggle('sidebar-collapsed', collapsed);
+    setExpanded(!collapsed);
+  }
+
+  function openMobile() {
+    container.classList.add('sidebar-open');
+    if (backdrop) backdrop.hidden = false;
+    document.body.style.overflow = 'hidden';
+    setExpanded(true);
+  }
+  function closeMobile() {
+    container.classList.remove('sidebar-open');
+    if (backdrop) backdrop.hidden = true;
+    document.body.style.overflow = '';
+    setExpanded(false);
+  }
+
+  function isMobile() { return mqMobile.matches; }
+
+  function syncForViewport() {
+    if (isMobile()) {
+      // Mobile: drawer closed by default; ignore the desktop collapsed class
+      container.classList.remove('sidebar-collapsed');
+      closeMobile();
+    } else {
+      // Desktop: close any open mobile drawer; restore persisted collapsed state
+      container.classList.remove('sidebar-open');
+      if (backdrop) backdrop.hidden = true;
+      document.body.style.overflow = '';
+      applyDesktopState();
+    }
+  }
+
+  btn.addEventListener('click', () => {
+    if (isMobile()) {
+      if (container.classList.contains('sidebar-open')) closeMobile();
+      else openMobile();
+    } else {
+      const next = !container.classList.contains('sidebar-collapsed');
+      container.classList.toggle('sidebar-collapsed', next);
+      setExpanded(!next);
+      try { localStorage.setItem(STORAGE_KEY, next ? '1' : '0'); } catch (e) {}
+    }
+  });
+
+  if (backdrop) backdrop.addEventListener('click', closeMobile);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && isMobile() && container.classList.contains('sidebar-open')) {
+      closeMobile();
+    }
+  });
+
+  // Close drawer after navigating to a note on mobile
+  sidebar.addEventListener('click', e => {
+    if (isMobile() && e.target.closest('a[href]')) closeMobile();
+  });
+
+  if (mqMobile.addEventListener) mqMobile.addEventListener('change', syncForViewport);
+  else if (mqMobile.addListener) mqMobile.addListener(syncForViewport);
+
+  syncForViewport();
+})();
+
 // ---------- Note TOC (right rail on individual note pages) ----------
 (function () {
   const tocEl = document.querySelector('.note-toc');

@@ -51,13 +51,7 @@ title: 主页
     {% for item in recent_items limit:5 %}
       <li>
         <time datetime="{{ item.date | date_to_xmlschema }}">{{ item.date | date: "%Y-%m-%d" }}</time>
-        <a href="{{ item.url | relative_url }}">{%- if item.collection == "articles" -%}
-          笔记-{{ item.category }}-{{ item.subcategory }}-{{ item.title }}
-        {%- elsif item.collection == "notes" -%}
-          数据碎笔-{{ item.category }}-{{ item.subcategory }}-{{ item.title }}
-        {%- else -%}
-          {{ item.title }}
-        {%- endif -%}</a>
+        <a href="{{ item.url | relative_url }}">{% include item-display-title.html item=item %}</a>
       </li>
     {% else %}
       <li class="empty">还没有内容，在 <code>_posts/</code> 或 <code>_articles/</code> 里写第一篇吧。</li>

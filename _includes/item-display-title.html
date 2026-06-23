@@ -1,0 +1,13 @@
+{%- comment -%}
+  Render an item's display title with collection prefix.
+  Used by index (recent), archive, and tags pages.
+  Params:
+    item — the document
+{%- endcomment -%}
+{%- if include.item.collection == "articles" -%}
+笔记-{{ include.item.category }}-{{ include.item.subcategory }}-{{ include.item.title }}
+{%- elsif include.item.collection == "notes" -%}
+数据碎笔-{{ include.item.category }}-{{ include.item.subcategory }}-{{ include.item.title }}
+{%- else -%}
+{{ include.item.title }}
+{%- endif -%}

@@ -47,7 +47,7 @@ permalink: /tags/
               {%- assign tags_csv = item.tags | join: "," | downcase -%}
               <li class="timeline-item" data-tags="{{ tags_csv }}">
                 <time>{{ item.date | date: "%m-%d" }}</time>
-                <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
+                <a href="{{ item.url | relative_url }}">{% include item-display-title.html item=item %}</a>
               </li>
             {%- endfor -%}
           </ul>

@@ -716,6 +716,7 @@ body.in-articles .site-main {
   display: flex;
   gap: 36px;
   align-items: flex-start;
+  position: relative;
 }
 
 .notes-sidebar {
@@ -727,6 +728,7 @@ body.in-articles .site-main {
   overflow-y: auto;
   padding-right: 16px;
   border-right: 1px solid var(--color-border-soft);
+  transition: opacity 0.18s ease;
 
   .sidebar-title {
     font-size: 0.74rem;
@@ -739,6 +741,53 @@ body.in-articles .site-main {
     border-bottom: 1px solid var(--color-border-soft);
   }
 }
+
+/* Sidebar toggle button — sits at the top of the content area */
+.sidebar-toggle {
+  position: absolute;
+  top: -4px;
+  left: calc(var(--sidebar-width) + 6px);
+  z-index: 20;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-light);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s, left 0.2s ease;
+
+  &:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+  }
+
+  svg { width: 16px; height: 16px; }
+  .icon-close { display: none; }
+}
+
+/* Collapsed state on desktop: hide sidebar, expand content, slide toggle to the edge */
+.notes-container.sidebar-collapsed {
+  gap: 0;
+
+  > .notes-sidebar {
+    width: 0;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+  > .sidebar-toggle { left: -4px; }
+}
+
+.sidebar-backdrop { display: none; }
 
 .tree {
   list-style: none;
@@ -1109,28 +1158,126 @@ body.in-articles .site-main {
 }
 
 @media (max-width: 768px) {
-  .nav { padding: 0 16px; gap: 14px; }
-  .nav-links { gap: 16px; }
-  .site-main { padding: 36px 16px 56px; }
-  .hero { padding: 36px 0 28px; h1 { font-size: 1.9rem; } }
-  .notes-container { flex-direction: column; gap: 0; }
-  .notes-sidebar {
-    width: 100%;
-    position: static;
-    max-height: none;
-    border-right: none;
-    border-bottom: 1px solid var(--color-border-soft);
-    padding: 0 0 20px;
-    margin-bottom: 24px;
+  .nav { padding: 0 12px; gap: 10px; }
+  .nav-links {
+    gap: 14px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+    li a { white-space: nowrap; font-size: 0.9rem; }
   }
+  .site-brand { font-size: 1.05rem; }
+  .site-main { padding: 28px 16px 48px; }
+  .hero {
+    padding: 32px 0 24px;
+    h1 { font-size: 1.7rem; }
+    .hero-subtitle { font-size: 1rem; }
+  }
+
+  /* Sidebar becomes a slide-in drawer on mobile */
+  .notes-container { flex-direction: column; gap: 0; }
+  .sidebar-toggle {
+    position: sticky;
+    top: calc(var(--header-height) + 8px);
+    left: 0;
+    margin-bottom: 14px;
+    width: 40px;
+    height: 40px;
+    box-shadow: var(--shadow-sm);
+  }
+  .notes-sidebar {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    bottom: 0;
+    width: min(82vw, 320px);
+    max-height: none;
+    background: var(--color-bg);
+    border-right: 1px solid var(--color-border);
+    border-bottom: none;
+    padding: 20px 18px 24px;
+    margin: 0;
+    z-index: 90;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease, opacity 0.22s ease;
+    box-shadow: var(--shadow-md);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .notes-container.sidebar-open {
+    > .notes-sidebar {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    > .sidebar-backdrop {
+      display: block;
+      position: fixed;
+      inset: var(--header-height) 0 0 0;
+      background: rgba(15, 14, 12, 0.45);
+      z-index: 80;
+    }
+    > .sidebar-toggle .icon-menu { display: none; }
+    > .sidebar-toggle .icon-close { display: inline-flex; }
+  }
+  /* Disable desktop collapse styling on mobile */
+  .notes-container.sidebar-collapsed > .notes-sidebar { /* keep mobile rules */ }
+
+  /* Larger tap targets in the tree */
+  .tree {
+    font-size: 0.98rem;
+    summary { padding: 8px 0; }
+    .tree-l3 a { padding: 8px 10px; font-size: 0.94rem; }
+    .tree-l2 > details > summary { font-size: 0.95rem; }
+  }
+
+  .notes-content .note-header h1 { font-size: 1.6rem; }
   .post-list li { flex-direction: column; gap: 4px; time { width: auto; } }
   .timeline { padding-left: 22px; .timeline-item::before { left: -28px; } }
-  .search-input { width: 130px; &:focus { width: 160px; } }
-  .search-results { width: calc(100vw - 32px); right: -8px; }
+  .search-input { width: 130px; &:focus { width: 150px; } }
+  .search-results { width: calc(100vw - 24px); right: -8px; }
   .terminal-body { padding: 12px 14px; font-size: 0.8rem; gap: 8px; }
   .terminal-header { padding: 7px 12px; .terminal-title { display: none; } }
+
+  /* Markdown reading defaults */
+  .post-content, .notes-content {
+    font-size: 0.98rem;
+    h2 { font-size: 1.3rem; margin-top: 28px; }
+    h3 { font-size: 1.1rem; margin-top: 22px; }
+    pre { padding: 12px 14px; font-size: 0.8rem; }
+  }
+  .post .post-header h1 { font-size: 1.6rem; }
 }
 
 @media (max-width: 480px) {
-  .search-box { display: none; }
+  .nav { gap: 8px; }
+  .nav-tools { gap: 6px; }
+  .search-box {
+    .search-input {
+      width: 34px;
+      padding-left: 28px;
+      padding-right: 0;
+      &:focus { width: calc(100vw - 180px); padding-right: 8px; }
+    }
+    .search-icon { left: 9px; }
+    .search-results {
+      position: fixed;
+      top: calc(var(--header-height) + 4px);
+      left: 8px;
+      right: 8px;
+      width: auto;
+      max-height: 70vh;
+    }
+  }
+  .hero h1 { font-size: 1.5rem; }
+}
+
+/* Tap-target hint: on touch devices, ensure interactive controls aren't tiny */
+@media (hover: none) and (pointer: coarse) {
+  .theme-toggle, .sidebar-toggle { min-width: 40px; min-height: 40px; }
+  .tree summary { padding: 7px 0; }
+  .tree .tree-l3 a { padding: 7px 10px; }
 }
