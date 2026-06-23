@@ -359,6 +359,18 @@
   applyFilter();
 })();
 
+// ---------- Wrap markdown tables in a horizontally scrollable container ----------
+(function () {
+  const tables = document.querySelectorAll('.post-content table, .notes-content table');
+  tables.forEach(t => {
+    if (t.parentElement && t.parentElement.classList.contains('table-scroll')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'table-scroll';
+    t.parentNode.insertBefore(wrap, t);
+    wrap.appendChild(t);
+  });
+})();
+
 // ---------- Sidebar toggle (knowledge base sidebar — desktop collapse + mobile drawer) ----------
 (function () {
   const container = document.querySelector('.notes-container');

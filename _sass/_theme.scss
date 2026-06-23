@@ -400,6 +400,7 @@ mark {
   gap: 10px;
   color: #E8E3D7;
   font-size: 0.88rem;
+  min-width: 0;
 
   .terminal-prompt {
     color: #D97757;
@@ -409,7 +410,8 @@ mark {
   }
 
   .terminal-cmd {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     overflow-x: auto;
     white-space: nowrap;
     color: #E8E3D7;
@@ -738,18 +740,19 @@ body.in-articles .site-main {
     color: var(--color-text-muted);
     margin-bottom: 12px;
     padding-bottom: 8px;
+    padding-right: 40px;
     border-bottom: 1px solid var(--color-border-soft);
   }
 }
 
-/* Sidebar toggle button — sits at the top of the content area */
+/* Sidebar toggle button — sits just inside the sidebar, next to its divider */
 .sidebar-toggle {
   position: absolute;
-  top: -4px;
-  left: calc(var(--sidebar-width) + 6px);
+  top: -2px;
+  left: calc(var(--sidebar-width) - 40px);
   z-index: 20;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -758,7 +761,7 @@ body.in-articles .site-main {
   border-radius: var(--radius-md);
   color: var(--color-text-light);
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s, background 0.15s, left 0.2s ease;
+  transition: color 0.15s, border-color 0.15s, background 0.15s, left 0.22s ease;
 
   &:hover {
     color: var(--color-primary);
@@ -766,11 +769,11 @@ body.in-articles .site-main {
     background: var(--color-primary-soft);
   }
 
-  svg { width: 16px; height: 16px; }
-  .icon-close { display: none; }
+  svg { width: 16px; height: 16px; display: block; }
+  .icon-expand { display: none; }
 }
 
-/* Collapsed state on desktop: hide sidebar, expand content, slide toggle to the edge */
+/* Collapsed state on desktop: hide sidebar, slide toggle to the left edge, flip icon */
 .notes-container.sidebar-collapsed {
   gap: 0;
 
@@ -784,7 +787,11 @@ body.in-articles .site-main {
     opacity: 0;
     pointer-events: none;
   }
-  > .sidebar-toggle { left: -4px; }
+  > .sidebar-toggle {
+    left: -2px;
+    .icon-collapse { display: none; }
+    .icon-expand { display: block; }
+  }
 }
 
 .sidebar-backdrop { display: none; }
@@ -1051,6 +1058,8 @@ body.in-articles .site-main {
 /* ============== Markdown content (shared) ============== */
 .post-content, .notes-content {
   font-size: 1rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 
   h2 {
     font-family: var(--font-serif);
@@ -1137,6 +1146,15 @@ body.in-articles .site-main {
     }
     th { background: var(--color-bg-soft); font-weight: 600; }
   }
+
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 18px;
+    max-width: 100%;
+    border-radius: var(--radius-sm);
+    table { margin-bottom: 0; min-width: 100%; width: max-content; }
+  }
 }
 
 /* ============== Footer ============== */
@@ -1207,6 +1225,11 @@ body.in-articles .site-main {
     opacity: 0;
     pointer-events: none;
   }
+  /* Mobile default (drawer closed): show expand icon */
+  .notes-container:not(.sidebar-open) > .sidebar-toggle {
+    .icon-collapse { display: none; }
+    .icon-expand { display: block; }
+  }
   .notes-container.sidebar-open {
     > .notes-sidebar {
       transform: translateX(0);
@@ -1220,11 +1243,19 @@ body.in-articles .site-main {
       background: rgba(15, 14, 12, 0.45);
       z-index: 80;
     }
-    > .sidebar-toggle .icon-menu { display: none; }
-    > .sidebar-toggle .icon-close { display: inline-flex; }
+    /* Float the toggle onto the drawer's right edge so it's tappable to close */
+    > .sidebar-toggle {
+      position: fixed;
+      top: calc(var(--header-height) + 10px);
+      left: calc(min(82vw, 320px) - 48px);
+      z-index: 95;
+      .icon-collapse { display: block; }
+      .icon-expand { display: none; }
+    }
   }
-  /* Disable desktop collapse styling on mobile */
-  .notes-container.sidebar-collapsed > .notes-sidebar { /* keep mobile rules */ }
+  /* Neutralize the desktop-collapsed rule on mobile */
+  .notes-container.sidebar-collapsed > .notes-sidebar { padding: 20px 18px 24px; }
+  .notes-container.sidebar-collapsed > .sidebar-toggle { left: 0; }
 
   /* Larger tap targets in the tree */
   .tree {
@@ -1242,12 +1273,14 @@ body.in-articles .site-main {
   .terminal-body { padding: 12px 14px; font-size: 0.8rem; gap: 8px; }
   .terminal-header { padding: 7px 12px; .terminal-title { display: none; } }
 
-  /* Markdown reading defaults */
+  /* Markdown reading defaults — 16px keeps iOS/Android from auto-zooming */
   .post-content, .notes-content {
-    font-size: 0.98rem;
+    font-size: 1rem;
+    line-height: 1.75;
     h2 { font-size: 1.3rem; margin-top: 28px; }
     h3 { font-size: 1.1rem; margin-top: 22px; }
-    pre { padding: 12px 14px; font-size: 0.8rem; }
+    pre { padding: 12px 14px; font-size: 0.85rem; }
+    ul, ol { margin-left: 22px; }
   }
   .post .post-header h1 { font-size: 1.6rem; }
 }
